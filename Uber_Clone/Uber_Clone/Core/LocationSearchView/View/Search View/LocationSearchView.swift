@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct LocationSearchView: View {
-    
-    @State private var startLocationText: String = ""
-    @State private var searchLocationText: String = ""
+    @Binding var mapState : MapViewState
+    @EnvironmentObject  var viewModel : LocationSearchViewModel
+    @State private var startRideLocationText: String = ""
     var body: some View {
         VStack {
             // search text fields
@@ -28,12 +28,12 @@ struct LocationSearchView: View {
                 }
                 
                 VStack{
-                    TextField("CurrentLocation" , text: $startLocationText)
+                    TextField("CurrentLocation" , text: $startRideLocationText)
                         .frame(height: 32)
                         .background(Color(.systemGroupedBackground))
                         .padding(.trailing)
                     
-                    TextField("Where to?" , text: $searchLocationText)
+                    TextField("Where to?" , text: $viewModel.queryFragment)
                         .frame(height: 32)
                         .background(Color(.systemGray4))
                         .padding(.trailing)
@@ -47,8 +47,14 @@ struct LocationSearchView: View {
             // search results
             ScrollView{
                 VStack(alignment: .leading){
-                    ForEach(0 ..< 20 , id:\.self) { location in 
-                        SearchResultCell()
+                    ForEach(viewModel.searchResults , id:\.self) { result in 
+                        SearchResultCell(locationName: result.title, locationInformation: result.subtitle)
+                            .onTapGesture {
+                                withAnimation(.spring()) {
+                                    viewModel.selectLocation(result)
+                                    mapState = .locationSelected
+                                }
+                            }
                     }
                 }
                 
@@ -60,5 +66,5 @@ struct LocationSearchView: View {
 }
 
 #Preview {
-    LocationSearchView()
+    LocationSearchView(mapState: .constant(.searchingForLocation))
 }
