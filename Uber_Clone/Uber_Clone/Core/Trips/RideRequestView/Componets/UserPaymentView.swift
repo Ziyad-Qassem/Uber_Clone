@@ -32,7 +32,7 @@ struct UserPaymentView: View {
                     .imageScale(.medium)
                     .padding()
                     .frame(height: 60)
-                    .background(Color(.systemGroupedBackground))
+                    .background(Color.theme.chevronSignColor)
                     .cornerRadius(10)
                     .padding(.horizontal)
                     .foregroundStyle(.black)

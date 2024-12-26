@@ -10,6 +10,7 @@ import SwiftUI
 struct RideOptionView: View {
     private var rideType = RideType.uberX
     private var rideBasePrice : Double?
+    @EnvironmentObject var locationViewModel : LocationSearchViewModel
     init(rideType : RideType , rideBasePrice : Double) {
         self.rideBasePrice = rideBasePrice
         self.rideType = rideType
@@ -24,7 +25,8 @@ struct RideOptionView: View {
                     Text(rideType.name)
                     
                     // ride option price
-                    Text(ridePriceForRideType(rideType , basePrice: rideBasePrice))
+                Text(String(format: "%.2f", locationViewModel.computeRidePrice(fortype: rideType)))
+                    
                 } .font(.system(size: 14 , weight: .semibold))
                     .padding()
                 
@@ -41,10 +43,7 @@ struct RideOptionView: View {
         }
     }
     
-    func ridePriceForRideType(_ rideType : RideType , basePrice: Double? ) -> String {
-        guard let price = basePrice else {return "no price"}
-        return "\(price * rideType.rate)"
-    }
+  
 }
 
 #Preview {

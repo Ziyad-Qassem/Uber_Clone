@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RideRequestView: View {
     @State private var selectedRideType : RideType = .uberX
-    
+    @EnvironmentObject var locationViewModel : LocationSearchViewModel
     var body: some View {
         VStack{
             Capsule()
@@ -39,7 +39,7 @@ struct RideRequestView: View {
                         Spacer()
                        
                         //ride start time
-                        Text("2:55")
+                        Text(locationViewModel.pickupTime ?? "no time")
                             .font(.footnote)
                             .foregroundStyle(.gray)
                             
@@ -48,13 +48,13 @@ struct RideRequestView: View {
                     Divider()
                         
                     HStack{
-                        Text("Destination")
+                        Text(locationViewModel.seletedLocation?.title ?? "NO Destination")
                             .frame(height: 25)
                       
                         Spacer()
                         
                         //ride arriving time
-                        Text("3:35")
+                        Text(locationViewModel.dropOffTime ?? "no time")
                             .font(.footnote)
                             .foregroundStyle(.gray)
                             .padding(.trailing)
@@ -81,9 +81,9 @@ struct RideRequestView: View {
                                     selectedRideType = ride
                                 }
                             })
-                            .foregroundStyle(Color(ride == selectedRideType ? .white : .black))
+                            .foregroundStyle(Color(ride == selectedRideType ? .white : Color.theme.primaryTextColor))
                             .scaleEffect(ride == selectedRideType ? 1.2 : 1.0)
-                            .background(Color(ride == selectedRideType ? .systemBlue : .systemGroupedBackground))
+                            .background(ride == selectedRideType ? Color( .systemBlue) : Color.theme.secondaryBackgroundColor)
                             .cornerRadius(10)
                         
                     }
@@ -94,6 +94,7 @@ struct RideRequestView: View {
             // paymentView
             
             UserPaymentView()
+                .background(Color.theme.secondaryBackgroundColor)
               
             // confirm ride button
             Button {
@@ -112,8 +113,7 @@ struct RideRequestView: View {
     
         }.padding(.bottom , 24)
             .padding(.leading, 8)
-            .background(.white)
-            
+            .background(Color.theme.backgroundColor)
             .cornerRadius(16)
     }
 }
