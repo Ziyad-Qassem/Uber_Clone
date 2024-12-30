@@ -9,8 +9,8 @@ import SwiftUI
 
 struct MapViewActionButton: View {
     @EnvironmentObject var  locationViewModel : LocationSearchViewModel
-    @EnvironmentObject var  authManager : AuthenticationManager
     @Binding var mapState: MapViewState
+    @Binding var showSideMenu: Bool
     var body: some View {
         Button {
             // go to searchView
@@ -33,7 +33,8 @@ struct MapViewActionButton: View {
     func actionForState(_ state : MapViewState) {
         switch state {
             case .noInput:
-            authManager.signoutUser()
+            showSideMenu.toggle()
+            break
         case .searchingForLocation:
             mapState = .noInput
         case .locationSelected , .polylineCreated:
@@ -52,5 +53,5 @@ struct MapViewActionButton: View {
 }
 
 #Preview {
-    MapViewActionButton(mapState: .constant(.noInput))
+    MapViewActionButton(mapState: .constant(.noInput), showSideMenu: .constant(false))
 }
