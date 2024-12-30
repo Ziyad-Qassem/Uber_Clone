@@ -7,6 +7,12 @@
 
 import Foundation
 import MapKit
+import Firebase
+enum LocationResultViewConfig {
+    case ride
+    case saveLocation(SavedLocationOption)
+}
+
 class LocationSearchViewModel : NSObject, ObservableObject{
     
     @Published var searchResults = [MKLocalSearchCompletion]()
@@ -30,18 +36,29 @@ class LocationSearchViewModel : NSObject, ObservableObject{
         searchCompleter.queryFragment = queryFragment
     }
     
-    func selectLocation(_ searchedLocation : MKLocalSearchCompletion) {
+    func selectLocation(_ searchedLocation : MKLocalSearchCompletion, config: LocationResultViewConfig) {
         searchForLocationMapData(forLocalSearchCompletion: searchedLocation) { response, error in
             if let error = error {
-                #if DEBUG
-               print("DEBUG: Error searching for location in selectLocation in LocationSearchViewModel: \(error.localizedDescription)")
-                #endif
+                print("DEBUG: Error searching for location in selectLocation in LocationSearchViewModel: \(error.localizedDescription)")
             }
             guard let item = response?.mapItems.first else { return }
             let coordinate = item.placemark.coordinate
-            self.seletedLocation = LocationModel(title: searchedLocation.title, coordinate: coordinate)
+            switch config {
+            case .ride:
+                self.seletedLocation = LocationModel(title: searchedLocation.title, coordinate: coordinate)
+            case .saveLocation(let locationType):
+                print("DEBUG: saved location coordinate \(coordinate) ")
+                
+                let savedLocation = SavedLocation(title: searchedLocation.title, address: searchedLocation.subtitle, coordinate: GeoPoint(latitude: coordinate.latitude, longitude: coordinate.longitude))
+               
+                DatabaseManager.shared.updateUserSavedLocations(with: savedLocation , locationType : locationType )
+            }
         }
+        
+        
     }
+       
+      
     
     // to use searching for location in map
     func searchForLocationMapData(forLocalSearchCompletion  localSearch: MKLocalSearchCompletion , completion: @escaping MKLocalSearch.CompletionHandler) {

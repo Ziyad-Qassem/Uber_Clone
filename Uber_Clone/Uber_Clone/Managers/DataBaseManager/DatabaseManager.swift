@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import FirebaseAuth
 import FirebaseFirestore
-final class DataBaseManager {
-     static let shared = DataBaseManager()
+final class DatabaseManager {
+     static let shared = DatabaseManager()
     
     func uploadUserData(for user: UserModel) {
             guard let encodedUser = try? Firestore.Encoder().encode(user) else{
@@ -33,4 +34,14 @@ final class DataBaseManager {
         }
         
     }
+    func updateUserSavedLocations(with location : SavedLocation, locationType : SavedLocationOption) {
+        guard let id = Auth.auth().currentUser?.uid else {
+            print("DEBUG: Error updating user data in DataBaseManager")
+            return
+        }
+        guard let encodedLocation = try? Firestore.Encoder().encode(location) else {return}
+        Firestore.firestore().collection("users").document(id).updateData([locationType.databasekey : encodedLocation])
+    }
+   
+   
 }
